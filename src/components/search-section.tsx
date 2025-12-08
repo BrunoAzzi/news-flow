@@ -1,37 +1,37 @@
 "use client";
 
-import { Loader2, Search } from "lucide-react";
-import type React from "react";
-import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Search } from "lucide-react";
+import { redirect } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
-interface SearchSectionProps {
-  favoriteTopics: string[];
-  onSearch: (query: string) => void;
-  isSearching: boolean;
-  currentQuery: string;
-}
+import { type SearchNewsSchema, searchNewsSchema } from "@/lib/schemas/news";
+import { TopicBadgeList } from "./search/topic-badge-list";
+import { SubmitButton } from "./submit-button";
 
 export function SearchSection({
   favoriteTopics,
-  onSearch,
-  isSearching,
-  currentQuery,
-}: SearchSectionProps) {
-  const [query, setQuery] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (query.trim()) {
-      onSearch(query.trim());
-    }
+  loading,
+  query,
+}: {
+  favoriteTopics: string[];
+  loading: boolean;
+  query?: string;
+}) {
+  const handleSearch = (query: string) => {
+    redirect(`/dashboard?query=${query}`);
   };
 
-  const handleTopicClick = (topic: string) => {
-    setQuery(topic);
-    onSearch(topic);
+  const form = useForm<SearchNewsSchema>({
+    resolver: zodResolver(searchNewsSchema),
+    defaultValues: {
+      query,
+    },
+  });
+
+  const onSubmit = async (data: SearchNewsSchema) => {
+    handleSearch(data.query);
   };
 
   return (
@@ -43,43 +43,38 @@ export function SearchSection({
         </p>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex gap-2 max-w-2xl mx-auto mb-4"
-      >
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search for news..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-10"
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex gap-2 max-w-2xl mx-auto mb-4"
+        >
+          <FormField
+            control={form.control}
+            name="query"
+            render={({ field }) => (
+              <FormItem className="flex-1 relative">
+                <FormControl>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                      {...field}
+                      placeholder="Search for news..."
+                      className="pl-10"
+                      disabled={loading}
+                    />
+                  </div>
+                </FormControl>
+              </FormItem>
+            )}
           />
-        </div>
-        <Button type="submit" disabled={isSearching || !query.trim()}>
-          {isSearching ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            "Search"
-          )}
-        </Button>
-      </form>
+          <SubmitButton loading={loading}>Search</SubmitButton>
+        </form>
+      </Form>
 
-      {favoriteTopics.length > 0 && (
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <span className="text-sm text-muted-foreground">Quick search:</span>
-          {favoriteTopics.map((topic) => (
-            <Badge
-              key={topic}
-              variant={currentQuery === topic ? "default" : "secondary"}
-              className="cursor-pointer hover:bg-primary/80 hover:text-primary-foreground transition-colors"
-              onClick={() => handleTopicClick(topic)}
-            >
-              {topic}
-            </Badge>
-          ))}
-        </div>
-      )}
+      <TopicBadgeList
+        onTopicSelection={handleSearch}
+        topicList={favoriteTopics}
+      />
     </div>
   );
 }

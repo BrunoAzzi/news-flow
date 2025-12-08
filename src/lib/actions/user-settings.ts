@@ -1,5 +1,6 @@
 "use server";
 
+import "server-only";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { apiTokenSchema } from "@/lib/schemas/user-settings";
@@ -84,7 +85,6 @@ export async function saveApiToken(
 ): Promise<{ status: "error"; message: string } | never> {
   const apiToken = formData.get("apiToken") as string;
 
-  // Server-side validation
   const result = apiTokenSchema.safeParse({ apiToken });
 
   if (!result.success) {

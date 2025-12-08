@@ -21,14 +21,9 @@ import type { CollectionModel } from "../generated/prisma/models";
 interface ArticleCardProps {
   article: Article;
   collections: CollectionModel[];
-  userId: string;
 }
 
-export function ArticleCard({
-  article,
-  collections,
-  userId,
-}: ArticleCardProps) {
+export function ArticleCard({ article, collections }: ArticleCardProps) {
   const [savedToCollections, setSavedToCollections] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -41,7 +36,7 @@ export function ArticleCard({
     setIsSaving(true);
 
     try {
-      await saveArticle(userId, collection.id, {
+      await saveArticle(collection.id, {
         url: article.url,
         title: article.title,
         description: article.description,
@@ -75,6 +70,8 @@ export function ArticleCard({
       {article.urlToImage && (
         <div className="relative h-48 overflow-hidden bg-muted">
           <Image
+            width={100}
+            height={100}
             src={article.urlToImage || "/placeholder.svg"}
             alt={article.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

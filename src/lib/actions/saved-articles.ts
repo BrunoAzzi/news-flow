@@ -1,15 +1,19 @@
 "use server";
 
+import "server-only";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma/client";
 import type { SavedArticleModel } from "../../generated/prisma/models";
+import { requireUser } from "../require-user";
 
 export async function getSavedArticles(
   collectionId: string,
 ): Promise<SavedArticleModel[]> {
+  const { userId } = await requireUser();
+
   try {
     return await prisma.savedArticle.findMany({
-      where: { collection_id: collectionId },
+      where: { collection_id: collectionId, user_id: userId },
       orderBy: { saved_at: "desc" },
     });
   } catch (error) {
@@ -19,7 +23,6 @@ export async function getSavedArticles(
 }
 
 export async function saveArticle(
-  userId: string,
   collectionId: string,
   article: {
     url: string;
@@ -31,6 +34,8 @@ export async function saveArticle(
     publishedAt?: string | null;
   },
 ): Promise<SavedArticleModel> {
+  const { userId } = await requireUser();
+
   try {
     // Check if article already exists in this collection
     const existing = await prisma.savedArticle.findUnique({
@@ -76,10 +81,9 @@ export async function saveArticle(
   }
 }
 
-export async function deleteSavedArticle(
-  id: string,
-  userId: string,
-): Promise<void> {
+export async function deleteSavedArticle(id: string): Promise<void> {
+  const { userId } = await requireUser();
+
   try {
     // Verify ownership
     const article = await prisma.savedArticle.findFirst({

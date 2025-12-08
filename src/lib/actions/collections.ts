@@ -1,12 +1,18 @@
 "use server";
 
+import "server-only";
+import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma/client";
-import type { CollectionModel } from "../../generated/prisma/models";
+import { requireUser } from "../require-user";
 
-export async function getCollections(
-  userId: string,
-): Promise<CollectionModel[]> {
+export async function getCollections() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+
   try {
     return await prisma.collection.findMany({
       where: { user_id: userId },
@@ -18,10 +24,9 @@ export async function getCollections(
   }
 }
 
-export async function getCollection(
-  id: string,
-  userId: string,
-): Promise<CollectionModel | null> {
+export async function getCollection(id: string) {
+  const { userId } = await requireUser();
+
   try {
     return await prisma.collection.findFirst({
       where: {
@@ -36,10 +41,11 @@ export async function getCollection(
 }
 
 export async function createCollection(
-  userId: string,
   name: string,
   description?: string | null,
-): Promise<CollectionModel> {
+) {
+  const { userId } = await requireUser();
+
   try {
     const collection = await prisma.collection.create({
       data: {
@@ -56,12 +62,10 @@ export async function createCollection(
   }
 }
 
-export async function deleteCollection(
-  id: string,
-  userId: string,
-): Promise<void> {
+export async function deleteCollection(id: string): Promise<void> {
+  const { userId } = await requireUser();
+
   try {
-    // Verify ownership
     const collection = await prisma.collection.findFirst({
       where: {
         id,
