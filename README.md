@@ -2,23 +2,55 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ and pnpm (or npm/yarn)
+- PostgreSQL database (local or cloud)
+
+### Setup
+
+1. Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+```
+
+2. Set up your database connection:
+
+Create a `.env` file in the root directory and add your PostgreSQL connection string:
+
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/newsflow?schema=public"
+```
+
+3. Run Prisma migrations:
+
+```bash
+# Generate Prisma Client
+npx prisma generate
+
+# Create and apply migrations
+npx prisma migrate dev --name init
+```
+
+4. Run the development server:
+
+```bash
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Database Management
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- View your database: `npx prisma studio`
+- Reset database: `npx prisma migrate reset`
+- Create new migration: `npx prisma migrate dev --name migration_name`
+
+This project uses:
+- [Prisma](https://www.prisma.io/) for database access
+- [Next.js](https://nextjs.org/) for the framework
+- [Clerk](https://clerk.com/) for authentication
 
 ## Learn More
 

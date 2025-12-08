@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Collection {
+  id          String   @id @default(uuid())
+  user_id     String   @map("user_id")
+  name        String
+  description String?
+  created_at  DateTime @default(now()) @map("created_at")
+  updated_at  DateTime @updatedAt @map("updated_at")
+
+  saved_articles SavedArticle[]
+
+  @@map("collections")
+}
+
+model SavedArticle {
+  id                   String    @id @default(uuid())
+  user_id              String    @map("user_id")
+  collection_id        String    @map("collection_id")
+  article_url          String    @map("article_url")
+  article_title        String    @map("article_title")
+  article_description  String?   @map("article_description")
+  article_image        String?   @map("article_image")
+  article_source       String?   @map("article_source")
+  article_author       String?   @map("article_author")
+  article_published_at DateTime? @map("article_published_at")
+  saved_at             DateTime  @default(now()) @map("saved_at")
+
+  collection Collection @relation(fields: [collection_id], references: [id], onDelete: Cascade)
+
+  @@unique([collection_id, article_url])
+  @@map("saved_articles")
+}
