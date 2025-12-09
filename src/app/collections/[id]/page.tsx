@@ -16,7 +16,7 @@ export default async function CollectionPage({
   }
 
   const { id } = await params;
-  const collection = await getCollection(id, userId);
+  const collection = await getCollection(id);
 
   if (!collection) {
     return (

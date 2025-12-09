@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createCollection } from "@/lib/actions/collections";
+import { createCollectionDirect } from "@/lib/actions/collections";
 import type { UserSettings } from "@/lib/actions/user-settings";
 import { updateUserSettings } from "@/lib/actions/user-settings";
 
@@ -98,7 +98,7 @@ export function OnboardingForm({
 
       // Create a default collection
       try {
-        await createCollection(userId, "Read Later", "Articles to read later");
+        await createCollectionDirect("Read Later", "Articles to read later");
       } catch (error) {
         console.warn("Failed to create default collection:", error);
         // Don't fail onboarding if collection creation fails

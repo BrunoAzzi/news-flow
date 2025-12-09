@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { createCollection } from "@/lib/actions/collections";
+import { createCollectionDirect } from "@/lib/actions/collections";
 import { completeOnboarding, saveTopics } from "@/lib/actions/user-settings";
 
 const SUGGESTED_TOPICS = [
@@ -75,11 +75,7 @@ export function TopicsForm({ userId, initialTopics }: TopicsFormProps) {
 
         // Create a default collection
         try {
-          await createCollection(
-            userId,
-            "Read Later",
-            "Articles to read later",
-          );
+          await createCollectionDirect("Read Later", "Articles to read later");
         } catch (error) {
           console.warn("Failed to create default collection:", error);
           // Don't fail onboarding if collection creation fails

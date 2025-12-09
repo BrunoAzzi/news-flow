@@ -22,16 +22,14 @@ export default async function DashboardPage({
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-6xl px-4 py-8">
-        <SearchSection
-          favoriteTopics={settings.favoriteTopics}
-          loading={false}
-          query={query}
-        />
+    <main className="mx-auto max-w-6xl px-4 py-8">
+      <SearchSection
+        favoriteTopics={settings.favoriteTopics}
+        loading={false}
+        query={query}
+      />
 
-        <ArticleGrid articles={articles} collections={collections} />
-      </main>
-    </div>
+      <ArticleGrid articles={articles} collections={collections} />
+    </main>
   );
 }

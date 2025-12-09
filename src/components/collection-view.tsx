@@ -49,7 +49,7 @@ export function CollectionView({
     setRemovingId(articleId);
 
     try {
-      await deleteSavedArticle(articleId, userId);
+      await deleteSavedArticle(articleId);
       setArticles(articles.filter((a) => a.id !== articleId));
       toast.success("Article removed from collection");
     } catch (error) {
