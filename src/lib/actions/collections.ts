@@ -54,21 +54,28 @@ export async function createCollection(
 
   const { name, description } = validation.value;
 
-  await prisma.collection.create({
-    data: {
-      user_id: userId,
-      name,
-      description,
-    },
-  });
+  try {
+    await prisma.collection.create({
+      data: {
+        user_id: userId,
+        name,
+        description,
+      },
+    });
 
-  revalidatePath("/collections");
-  revalidatePath("/dashboard");
+    revalidatePath("/collections");
+    revalidatePath("/dashboard");
 
-  return {
-    status: "success",
-    errors: null,
-  };
+    return {
+      status: "success",
+    };
+  } catch (error) {
+    console.error("Error creating collection:", error);
+    return {
+      status: "error",
+      message: "Failed to create collection",
+    };
+  }
 }
 
 export async function deleteCollection(

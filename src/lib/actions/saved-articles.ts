@@ -101,9 +101,12 @@ export async function deleteSavedArticle(
     await prisma.savedArticle.delete({
       where: { id, user_id: userId },
     });
+
     revalidatePath(`/collections/${article.collection_id}`);
+
+    return { status: "success" };
   } catch (error) {
     console.error("Error deleting saved article:", error);
-    throw new Error("Failed to delete article");
+    return { status: "error", message: "Failed to delete article" };
   }
 }
