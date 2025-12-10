@@ -1,6 +1,6 @@
 import { Hash } from "lucide-react";
 import { redirect } from "next/navigation";
-import { TopicsForm } from "@/components/onboarding/topics-form";
+import { TopicsFormWithRedirect } from "@/components/onboarding/topics-form-with-redirect";
 import { getUserSettings } from "@/lib/actions/user-settings";
 
 export default async function TopicsPage() {
@@ -23,12 +23,15 @@ export default async function TopicsPage() {
           <span className="text-2xl font-semibold">NewsFlow</span>
         </div>
 
+        {/* Progress indicator */}
         <div className="flex items-center justify-center gap-2 mb-8">
           <div className="h-2 w-16 rounded-full bg-primary" />
           <div className="h-2 w-16 rounded-full bg-primary" />
         </div>
 
-        <TopicsForm initialTopics={settings?.favoriteTopics || []} />
+        <TopicsFormWithRedirect
+          initialTopics={settings?.favoriteTopics || []}
+        />
       </div>
     </div>
   );

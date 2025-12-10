@@ -2,7 +2,6 @@
 
 import "server-only";
 import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 import { apiTokenSchema } from "@/lib/schemas/user-settings";
 
 export interface UserSettings {
@@ -79,10 +78,7 @@ export async function updateUserSettings(
   }
 }
 
-export async function saveApiToken(
-  _prevState: unknown,
-  formData: FormData,
-): Promise<{ status: "error"; message: string } | never> {
+export async function saveApiToken(_prevState: unknown, formData: FormData) {
   const apiToken = formData.get("apiToken") as string;
 
   const result = apiTokenSchema.safeParse({ apiToken });
@@ -97,6 +93,7 @@ export async function saveApiToken(
 
   try {
     const user = await currentUser();
+
     if (!user) {
       return { status: "error", message: "User not authenticated" };
     }
@@ -114,7 +111,10 @@ export async function saveApiToken(
       },
     });
 
-    redirect("/onboarding/topics");
+    return {
+      status: "success",
+      message: "API token saved successfully",
+    };
   } catch (error) {
     console.error("Error saving API token:", error);
     return {
@@ -194,51 +194,5 @@ export async function removeApiToken(): Promise<void> {
   } catch (error) {
     console.error("Error removing API token:", error);
     throw new Error("Failed to remove API token");
-  }
-}
-
-export async function updateApiToken(
-  _prevState: unknown,
-  formData: FormData,
-): Promise<{ status: "error"; message: string } | { status: "success" }> {
-  const apiToken = formData.get("apiToken") as string;
-
-  const result = apiTokenSchema.safeParse({ apiToken });
-
-  if (!result.success) {
-    const errorMessage = result.error.errors[0]?.message || "Validation failed";
-    return {
-      status: "error",
-      message: errorMessage,
-    };
-  }
-
-  try {
-    const user = await currentUser();
-    if (!user) {
-      return { status: "error", message: "User not authenticated" };
-    }
-
-    const { clerkClient } = await import("@clerk/nextjs/server");
-    const client = await clerkClient();
-
-    const currentMetadata = (user.privateMetadata ||
-      {}) as Partial<UserSettings>;
-
-    await client.users.updateUserMetadata(user.id, {
-      privateMetadata: {
-        ...currentMetadata,
-        newsApiToken: result.data.apiToken,
-      },
-    });
-
-    return { status: "success" };
-  } catch (error) {
-    console.error("Error updating API token:", error);
-    return {
-      status: "error",
-      message:
-        error instanceof Error ? error.message : "Failed to update API token",
-    };
   }
 }

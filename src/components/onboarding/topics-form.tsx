@@ -30,9 +30,10 @@ const SUGGESTED_TOPICS = [
 
 interface TopicsFormProps {
   initialTopics?: string[];
+  onSuccess?: () => void;
 }
 
-export function TopicsForm({ initialTopics = [] }: TopicsFormProps) {
+export function TopicsForm({ initialTopics = [], onSuccess }: TopicsFormProps) {
   const [topics, setTopics] = useState<string[]>(initialTopics);
   const [customTopic, setCustomTopic] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -66,10 +67,8 @@ export function TopicsForm({ initialTopics = [] }: TopicsFormProps) {
     startTransition(async () => {
       try {
         await saveTopics(topics);
-        await completeOnboarding();
 
-        toast.success("Setup complete! Welcome to NewsFlow");
-        router.push("/dashboard");
+        onSuccess?.();
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Failed to complete setup",

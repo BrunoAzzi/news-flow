@@ -30,9 +30,10 @@ import {
 
 interface ApiTokenFormProps {
   initialToken?: string;
+  onSuccess?: () => void;
 }
 
-export function ApiTokenForm({ initialToken }: ApiTokenFormProps) {
+export function ApiTokenForm({ initialToken, onSuccess }: ApiTokenFormProps) {
   const [state, formAction, isPending] = useActionState(saveApiToken, null);
 
   const form = useForm<ApiTokenSchema>({
@@ -46,7 +47,12 @@ export function ApiTokenForm({ initialToken }: ApiTokenFormProps) {
     if (state?.status === "error" && state.message) {
       toast.error(state.message);
     }
-  }, [state]);
+
+    if (state?.status === "success") {
+      toast.success("API token saved successfully");
+      onSuccess?.();
+    }
+  }, [state, onSuccess]);
 
   return (
     <Card>

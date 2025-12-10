@@ -1,6 +1,6 @@
 import { Key } from "lucide-react";
 import { redirect } from "next/navigation";
-import { ApiTokenForm } from "@/components/onboarding/api-token-form";
+import { ApiTokenFormWithRedirect } from "@/components/onboarding/api-token-form-with-redirect";
 import { getUserSettings } from "@/lib/actions/user-settings";
 
 export default async function ApiTokenPage() {
@@ -24,7 +24,7 @@ export default async function ApiTokenPage() {
           <div className="h-2 w-16 rounded-full bg-muted" />
         </div>
 
-        <ApiTokenForm initialToken={settings?.newsApiToken || ""} />
+        <ApiTokenFormWithRedirect initialToken={settings?.newsApiToken || ""} />
       </div>
     </div>
   );
