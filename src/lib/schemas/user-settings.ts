@@ -8,4 +8,3 @@ export const apiTokenSchema = z.object({
 });
 
 export type ApiTokenSchema = z.infer<typeof apiTokenSchema>;
-

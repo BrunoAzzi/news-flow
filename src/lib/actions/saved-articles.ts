@@ -3,7 +3,6 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma/client";
-import type { SavedArticleModel } from "../../generated/prisma/models";
 import { requireUser } from "../require-user";
 
 export async function getSavedArticles(collectionId: string) {

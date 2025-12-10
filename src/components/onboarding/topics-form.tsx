@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { completeOnboarding, saveTopics } from "@/lib/actions/user-settings";
+import { saveTopics } from "@/lib/actions/user-settings";
 
 const SUGGESTED_TOPICS = [
   "Crypto",

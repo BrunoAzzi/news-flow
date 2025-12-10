@@ -15,4 +15,3 @@ export const createCollectionSchema = z.object({
 });
 
 export type CreateCollectionSchema = z.infer<typeof createCollectionSchema>;
-
