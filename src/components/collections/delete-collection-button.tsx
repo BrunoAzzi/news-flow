@@ -22,16 +22,11 @@ interface DeleteCollectionButtonProps {
   collectionName: string;
 }
 
-type FormState =
-  | { status: "success" }
-  | { status: "error"; message: string }
-  | null;
-
 export function DeleteCollectionButton({
   collectionId,
   collectionName,
 }: DeleteCollectionButtonProps) {
-  const [state, deleteAction, isPending] = useActionState<FormState, FormData>(
+  const [state, deleteAction, isPending] = useActionState(
     deleteCollection,
     null,
   );

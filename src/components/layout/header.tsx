@@ -1,18 +1,14 @@
-"use client";
-
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
 import { FolderOpen, Newspaper } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getUserSettings } from "@/lib/actions/user-settings";
 import { BackButton } from "./back-button";
+import { UserMenuButton } from "./user-button";
 
-export function Header() {
+export async function Header() {
+  const settings = await getUserSettings();
+
   return (
     <header className="border-b border-border bg-card sticky top-0 z-40">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
@@ -45,7 +41,10 @@ export function Header() {
           </SignedOut>
 
           <SignedIn>
-            <UserButton />
+            <UserMenuButton
+              apiToken={settings?.newsApiToken}
+              topics={settings?.favoriteTopics}
+            />
           </SignedIn>
         </div>
       </div>

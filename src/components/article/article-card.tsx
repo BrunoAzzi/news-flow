@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { saveArticle } from "@/lib/actions/saved-articles";
 import type { Article } from "@/lib/types";
-import type { CollectionModel } from "../generated/prisma/models";
-import { CreateCollectionDialog } from "./collections/create-collection-dialog";
+import type { CollectionModel } from "../../generated/prisma/models";
+import { CreateCollectionDialog } from "../collections/create-collection-dialog";
 
 interface ArticleCardProps {
   article: Article;
@@ -140,20 +140,23 @@ export function ArticleCard({ article, collections }: ArticleCardProps) {
                 <CreateCollectionDialog>Create one</CreateCollectionDialog>
               </div>
             ) : (
-              collections.map((collection) => (
-                <DropdownMenuItem
-                  key={collection.id}
-                  onClick={() => handleSaveToCollection(collection)}
-                  className="cursor-pointer"
-                >
-                  {savedToCollections.includes(collection.id) ? (
-                    <Check className="h-4 w-4 mr-2 text-primary" />
-                  ) : (
-                    <Plus className="h-4 w-4 mr-2" />
-                  )}
-                  {collection.name}
-                </DropdownMenuItem>
-              ))
+              <>
+                {collections.map((collection) => (
+                  <DropdownMenuItem
+                    key={collection.id}
+                    onClick={() => handleSaveToCollection(collection)}
+                    className="cursor-pointer"
+                  >
+                    {savedToCollections.includes(collection.id) ? (
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                    ) : (
+                      <Plus className="h-4 w-4 mr-2" />
+                    )}
+                    {collection.name}
+                  </DropdownMenuItem>
+                ))}
+                <CreateCollectionDialog>new collection</CreateCollectionDialog>
+              </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>

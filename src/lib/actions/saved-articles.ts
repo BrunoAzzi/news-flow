@@ -6,9 +6,7 @@ import { prisma } from "@/lib/prisma/client";
 import type { SavedArticleModel } from "../../generated/prisma/models";
 import { requireUser } from "../require-user";
 
-export async function getSavedArticles(
-  collectionId: string,
-): Promise<SavedArticleModel[]> {
+export async function getSavedArticles(collectionId: string) {
   const { userId } = await requireUser();
 
   try {
@@ -33,7 +31,7 @@ export async function saveArticle(
     author?: string | null;
     publishedAt?: string | null;
   },
-): Promise<SavedArticleModel> {
+) {
   const { userId } = await requireUser();
 
   try {
@@ -84,23 +82,12 @@ export async function saveArticle(
 export async function deleteSavedArticle(
   _prevState: unknown,
   formData: FormData,
-): Promise<
-  | { status: "success"; articleId: string; collectionId: string }
-  | { status: "error"; message: string }
-> {
+) {
   const { userId } = await requireUser();
 
   const id = formData.get("id") as string;
 
-  if (!id) {
-    return {
-      status: "error",
-      message: "Article ID is required",
-    };
-  }
-
   try {
-    // Verify ownership
     const article = await prisma.savedArticle.findFirst({
       where: {
         id,
@@ -109,26 +96,15 @@ export async function deleteSavedArticle(
     });
 
     if (!article) {
-      return {
-        status: "error",
-        message: "Article not found",
-      };
+      throw new Error("Article not found");
     }
 
     await prisma.savedArticle.delete({
-      where: { id },
+      where: { id, user_id: userId },
     });
     revalidatePath(`/collections/${article.collection_id}`);
-    return {
-      status: "success",
-      articleId: id,
-      collectionId: article.collection_id,
-    };
   } catch (error) {
     console.error("Error deleting saved article:", error);
-    return {
-      status: "error",
-      message: "Failed to delete article",
-    };
+    throw new Error("Failed to delete article");
   }
 }

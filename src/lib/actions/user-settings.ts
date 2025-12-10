@@ -171,3 +171,74 @@ export async function completeOnboarding(): Promise<void> {
     throw new Error("Failed to complete onboarding");
   }
 }
+
+export async function removeApiToken(): Promise<void> {
+  try {
+    const user = await currentUser();
+    if (!user) throw new Error("User not authenticated");
+
+    const { clerkClient } = await import("@clerk/nextjs/server");
+    const client = await clerkClient();
+
+    const currentPrivateMetadata = (user.privateMetadata || {}) as {
+      newsApiToken?: string;
+      favoriteTopics?: string[];
+    };
+
+    await client.users.updateUserMetadata(user.id, {
+      privateMetadata: {
+        ...currentPrivateMetadata,
+        newsApiToken: "",
+      },
+    });
+  } catch (error) {
+    console.error("Error removing API token:", error);
+    throw new Error("Failed to remove API token");
+  }
+}
+
+export async function updateApiToken(
+  _prevState: unknown,
+  formData: FormData,
+): Promise<{ status: "error"; message: string } | { status: "success" }> {
+  const apiToken = formData.get("apiToken") as string;
+
+  const result = apiTokenSchema.safeParse({ apiToken });
+
+  if (!result.success) {
+    const errorMessage = result.error.errors[0]?.message || "Validation failed";
+    return {
+      status: "error",
+      message: errorMessage,
+    };
+  }
+
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: "error", message: "User not authenticated" };
+    }
+
+    const { clerkClient } = await import("@clerk/nextjs/server");
+    const client = await clerkClient();
+
+    const currentMetadata = (user.privateMetadata ||
+      {}) as Partial<UserSettings>;
+
+    await client.users.updateUserMetadata(user.id, {
+      privateMetadata: {
+        ...currentMetadata,
+        newsApiToken: result.data.apiToken,
+      },
+    });
+
+    return { status: "success" };
+  } catch (error) {
+    console.error("Error updating API token:", error);
+    return {
+      status: "error",
+      message:
+        error instanceof Error ? error.message : "Failed to update API token",
+    };
+  }
+}

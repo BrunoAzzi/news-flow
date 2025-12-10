@@ -1,8 +1,8 @@
-import { ArticleCard } from "@/components/article-card";
 import type { Article } from "@/lib/types";
-import type { CollectionModel } from "../generated/prisma/models";
-import { EmptyState } from "./search/empty-state";
-import { NoResults } from "./search/no-results";
+import type { CollectionModel } from "../../generated/prisma/models";
+import { EmptyState } from "../search/empty-state";
+import { NoResults } from "../search/no-results";
+import { ArticleCard } from "./article-card";
 
 export function ArticleGrid({
   articles,

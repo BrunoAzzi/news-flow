@@ -30,10 +30,6 @@ export function SearchSection({
     },
   });
 
-  const onSubmit = async (data: SearchNewsSchema) => {
-    handleSearch(data.query);
-  };
-
   return (
     <div className="mb-8">
       <div className="text-center mb-6">
@@ -45,7 +41,7 @@ export function SearchSection({
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit((data) => handleSearch(data.query))}
           className="flex gap-2 max-w-2xl mx-auto mb-4"
         >
           <FormField

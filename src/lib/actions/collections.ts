@@ -1,18 +1,14 @@
 "use server";
 
 import "server-only";
-import { auth } from "@clerk/nextjs/server";
+import { parseWithZod } from "@conform-to/zod";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma/client";
-import type { CollectionModel } from "../../generated/prisma/models";
 import { requireUser } from "../require-user";
+import { createCollectionSchema } from "../schemas/collections";
 
-export async function getCollections() {
-  const { userId } = await auth();
-
-  if (!userId) {
-    throw new Error("User not authenticated");
-  }
+export async function getCollectionList() {
+  const { userId } = await requireUser();
 
   try {
     return await prisma.collection.findMany({
@@ -41,56 +37,38 @@ export async function getCollection(id: string) {
   }
 }
 
-async function createCollectionInternal(
-  name: string,
-  description?: string | null,
-): Promise<CollectionModel> {
-  const { userId } = await requireUser();
-
-  if (!name?.trim()) {
-    throw new Error("Collection name is required");
-  }
-
-  const collection = await prisma.collection.create({
-    data: {
-      user_id: userId,
-      name: name.trim(),
-      description: description?.trim() || null,
-    },
-  });
-  revalidatePath("/collections");
-  revalidatePath("/dashboard");
-  return collection;
-}
-
 export async function createCollection(
   _prevState: unknown,
   formData: FormData,
-): Promise<
-  | { status: "success"; data: CollectionModel }
-  | { status: "error"; message: string }
-> {
-  const name = formData.get("name") as string;
-  const description = formData.get("description") as string | null;
+) {
+  const { userId } = await requireUser();
 
-  try {
-    const collection = await createCollectionInternal(name, description);
-    return { status: "success", data: collection };
-  } catch (error) {
-    console.error("Error creating collection:", error);
+  const validation = parseWithZod(formData, { schema: createCollectionSchema });
+
+  if (validation.status !== "success") {
     return {
       status: "error",
-      message:
-        error instanceof Error ? error.message : "Failed to create collection",
+      errors: validation.error?.fieldErrors,
     };
   }
-}
 
-export async function createCollectionDirect(
-  name: string,
-  description?: string | null,
-): Promise<CollectionModel> {
-  return createCollectionInternal(name, description);
+  const { name, description } = validation.value;
+
+  await prisma.collection.create({
+    data: {
+      user_id: userId,
+      name,
+      description,
+    },
+  });
+
+  revalidatePath("/collections");
+  revalidatePath("/dashboard");
+
+  return {
+    status: "success",
+    errors: null,
+  };
 }
 
 export async function deleteCollection(
@@ -124,11 +102,13 @@ export async function deleteCollection(
     }
 
     await prisma.collection.delete({
-      where: { id },
+      where: { id, user_id: userId },
     });
+
     revalidatePath("/collections");
     revalidatePath("/dashboard");
     revalidatePath(`/collections/${id}`);
+
     return { status: "success" };
   } catch (error) {
     console.error("Error deleting collection:", error);

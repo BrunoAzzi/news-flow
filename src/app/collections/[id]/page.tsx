@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { CollectionView } from "@/components/collection-view";
+import { SavedArticleCard } from "@/components/article/saved-article-card";
+import { CollectionHeader } from "@/components/collections/collection-header";
+import { EmptyCollectionState } from "@/components/collections/empty-collection-state";
 import { getCollection } from "@/lib/actions/collections";
 import { getSavedArticles } from "@/lib/actions/saved-articles";
 
@@ -29,5 +31,24 @@ export default async function CollectionPage({
 
   const articles = await getSavedArticles(id);
 
-  return <CollectionView collection={collection} articles={articles} />;
+  return (
+    <div className="min-h-screen bg-background">
+      <main className="mx-auto max-w-6xl px-4 py-8">
+        <CollectionHeader
+          collection={collection}
+          articleCount={articles.length}
+        />
+
+        {articles.length === 0 ? (
+          <EmptyCollectionState />
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {articles.map((article) => (
+              <SavedArticleCard key={article.id} article={article} />
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  );
 }

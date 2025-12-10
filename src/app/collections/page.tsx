@@ -1,10 +1,10 @@
 import { CollectionCard } from "@/components/collections/collection-card";
 import { CollectionsEmptyState } from "@/components/collections/collections-empty-state";
 import { CreateCollectionDialog } from "@/components/collections/create-collection-dialog";
-import { getCollections } from "@/lib/actions/collections";
+import { getCollectionList } from "@/lib/actions/collections";
 
 export default async function CollectionsPage() {
-  const collections = await getCollections();
+  const collections = await getCollectionList();
 
   return (
     <div className="min-h-screen bg-background">
