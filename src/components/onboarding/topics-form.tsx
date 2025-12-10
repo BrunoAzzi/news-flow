@@ -111,7 +111,7 @@ export function TopicsForm({ userId, initialTopics }: TopicsFormProps) {
           </div>
           <CardTitle className="text-xl">Choose Your Topics</CardTitle>
           <CardDescription>
-            Select or add topics you&apos;re interested in. These will appear as
+            Select or add topics you're interested in. These will appear as
             quick filters in your dashboard.
           </CardDescription>
         </CardHeader>

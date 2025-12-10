@@ -1,7 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
-import type React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
@@ -13,11 +12,7 @@ export const metadata: Metadata = {
   generator: "v0.app",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <ClerkProvider>
       <html lang="en">

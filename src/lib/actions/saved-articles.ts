@@ -81,8 +81,23 @@ export async function saveArticle(
   }
 }
 
-export async function deleteSavedArticle(id: string): Promise<void> {
+export async function deleteSavedArticle(
+  _prevState: unknown,
+  formData: FormData,
+): Promise<
+  | { status: "success"; articleId: string; collectionId: string }
+  | { status: "error"; message: string }
+> {
   const { userId } = await requireUser();
+
+  const id = formData.get("id") as string;
+
+  if (!id) {
+    return {
+      status: "error",
+      message: "Article ID is required",
+    };
+  }
 
   try {
     // Verify ownership
@@ -94,15 +109,26 @@ export async function deleteSavedArticle(id: string): Promise<void> {
     });
 
     if (!article) {
-      throw new Error("Article not found");
+      return {
+        status: "error",
+        message: "Article not found",
+      };
     }
 
     await prisma.savedArticle.delete({
       where: { id },
     });
     revalidatePath(`/collections/${article.collection_id}`);
+    return {
+      status: "success",
+      articleId: id,
+      collectionId: article.collection_id,
+    };
   } catch (error) {
     console.error("Error deleting saved article:", error);
-    throw new Error("Failed to delete article");
+    return {
+      status: "error",
+      message: "Failed to delete article",
+    };
   }
 }

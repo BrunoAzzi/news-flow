@@ -141,8 +141,8 @@ export function OnboardingForm({
             </div>
             <CardTitle className="text-xl">Connect News API</CardTitle>
             <CardDescription>
-              Enter your News API token to search for news articles. Don&apos;t
-              have one?{" "}
+              Enter your News API token to search for news articles. Don't have
+              one?{" "}
               <a
                 href="https://newsapi.org/register"
                 target="_blank"
@@ -183,8 +183,8 @@ export function OnboardingForm({
             </div>
             <CardTitle className="text-xl">Choose Your Topics</CardTitle>
             <CardDescription>
-              Select or add topics you&apos;re interested in. These will appear
-              as quick filters in your dashboard.
+              Select or add topics you're interested in. These will appear as
+              quick filters in your dashboard.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">

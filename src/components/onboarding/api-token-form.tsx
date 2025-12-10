@@ -79,8 +79,8 @@ export function ApiTokenForm({ initialToken }: ApiTokenFormProps) {
           </div>
           <CardTitle className="text-xl">Connect News API</CardTitle>
           <CardDescription>
-            Enter your News API token to search for news articles. Don&apos;t
-            have one?{" "}
+            Enter your News API token to search for news articles. Don't have
+            one?{" "}
             <a
               href="https://newsapi.org/register"
               target="_blank"

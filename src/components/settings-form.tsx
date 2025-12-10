@@ -20,11 +20,6 @@ import { Label } from "@/components/ui/label";
 import type { UserSettings } from "@/lib/actions/user-settings";
 import { updateUserSettings } from "@/lib/actions/user-settings";
 
-interface User {
-  id: string;
-  email?: string;
-}
-
 const SUGGESTED_TOPICS = [
   "Crypto",
   "AI",
@@ -38,11 +33,11 @@ const SUGGESTED_TOPICS = [
 ];
 
 interface SettingsFormProps {
-  user: User;
+  userEmail: string;
   settings: UserSettings;
 }
 
-export function SettingsForm({ user, settings }: SettingsFormProps) {
+export function SettingsForm({ userEmail, settings }: SettingsFormProps) {
   const [apiToken, setApiToken] = useState(settings.newsApiToken || "");
   const [topics, setTopics] = useState<string[]>(settings.favoriteTopics || []);
   const [customTopic, setCustomTopic] = useState("");
@@ -221,7 +216,7 @@ export function SettingsForm({ user, settings }: SettingsFormProps) {
             <CardContent>
               <div className="grid gap-2">
                 <Label>Email</Label>
-                <Input value={user.email || ""} disabled />
+                <Input value={userEmail} disabled />
               </div>
             </CardContent>
           </Card>
